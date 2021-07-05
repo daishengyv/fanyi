@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>word</title>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: '微软雅黑', sans-serif;
+            box-sizing: border-box;
+        }
+ 
+        body {
+            background: #18191E;
+            color: #F9FDFE;
+        }
+ 
+        #main{
+            padding: 0 0 100px;
+        }
+
+        .popup{
+            width: 94%;
+            position: absolute;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+            bottom: 0;
+        }
+
+        .san1{
+            border:10px solid transparent;
+            border-top-color:#ccc;
+            margin: 0 auto -10px;
+            display:block;
+            width: 20px;
+        }
+
+        .san2{
+            border:10px solid transparent;
+            border-bottom-color:#ccc;
+            margin: -10px auto 0;
+            display:block;
+            width: 20px;
+        }
+
+        .cont{
+            background-color: #ccc;
+            min-height: 100px;
+            border-radius: 8px;
+
+        }
+
+        .popup_w{
+            position: relative;
+            height: 1px;
+            width: 100%;
+        }
+
+        .btn{
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-size: 20px;
+            transition: 0.5s;
+            height: 48px;
+            line-height: 48px;
+            overflow: hidden;
+            -webkit-box-reflect: below 1px linear-gradient(transparent, #0003);
+            border-bottom: 1px solid #303136;
+        }
+
+        .index_w{
+            height: 48px;
+            width: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            border-bottom: 1px solid #303136;
+        }
+
+        .index{
+            font-size: 12px;
+            width: 24px;
+            line-height: 24px;
+            text-align: center;
+            border: 1px solid #303136;
+            border-radius: 100%;
+        }
+
+        .index_a .index{
+            background-color: #1A967E;
+            color: #F9FDFE;
+            border-color: #1A967E;
+        }
+        
+        #ware{
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-start;
+        }
+
+    </style>
+</head>
+ 
+<body>
+    <div id="ware">
+        <div id="content"></div>
+        <div id="main"></div>
+        <!-- <div style="height: 20vh;"></div> -->
+    </div>
+
+
+
+    
+    <script>
+        window.onload = function(){
+            
+            localStorage.setItem("lastname", "Smith");
+            lastname = localStorage.getItem("lastname");
+            console.log(lastname)
+
+
+
+
+            words = `1
+            2
+            3
+            4
+            5
+            6
+            7
+            8
+            9
+            10
+            11
+            12
+            13
+            14
+            15
+            16
+            17
+            18
+            19`
+            words = words.split('\n')
+            str = ''
+            str1 = ''
+            list = []
+            for(let i=0;i<words.length;i++){
+                word = words[i].trim()
+                list.push(word)
+                str += `<div class='btn'><div></div><div>${word}</div><div></div></div>`
+                str1 += `<div class="index_w"><div class='index'>${i+1}</div></div>`
+            }
+            $('#main').append(str)
+            $('#content').append(str1)
+            console.log(list)
+
+            $('.btn').click(function(event){
+                console.log(event)
+                $('.popup_w').remove()
+                san1 = ''
+                san2 = ''
+                index = list.indexOf($(this)[0].outerText)
+                if(event.clientY/$(window).height()>0.5){
+                    san1 = '<div class="san1"></div>'
+                    popup = `<div class="popup_w"><div class="popup">${san2}<div class="cont"></div>${san1}</div></div>`
+                    $(this).before(popup)
+                }else{
+                    san2 = '<div class="san2"></div>'
+                    popup = `<div class="popup_w"><div class="popup" style="top:0;">${san2}<div class="cont"></div>${san1}</div></div>`
+                    $(this).after(popup)
+                }
+
+                $('html,body').animate({scrollTop:index*40},'slow')
+
+
+                event.stopPropagation()
+            })
+
+            $('#main').click(function(event){
+                $('.popup_w').remove()
+            })
+
+            $('.btn').dblclick(function(){
+                $('.popup_w').remove()
+                console.log(list.indexOf($(this)[0].outerText),$(this)[0].outerText)
+                index = list.indexOf($(this)[0].outerText)
+                if(index != -1){
+                    del_i = list.splice(index, 1)[0]
+                    list.unshift(del_i)
+                }
+                console.log(list)
+                $('#main').prepend($(this))
+            })
+            // 
+            $('.index_w').click(function(){
+                console.log($(this).toggleClass("index_a"))
+            })
+        }
+    </script>
+</body>
+ 
+</html>
