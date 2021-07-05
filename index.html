@@ -25,7 +25,7 @@
         }
 
         .popup{
-            width: 94%;
+            width: 100%;
             position: absolute;
             left: 0;
             right: 0;
@@ -35,7 +35,7 @@
 
         .san1{
             border:10px solid transparent;
-            border-top-color:#ccc;
+            border-top-color:rgba(255, 255, 255, 0.8);
             margin: 0 auto -10px;
             display:block;
             width: 20px;
@@ -43,14 +43,14 @@
 
         .san2{
             border:10px solid transparent;
-            border-bottom-color:#ccc;
+            border-bottom-color:rgba(255, 255, 255, 0.8);
             margin: -10px auto 0;
             display:block;
             width: 20px;
         }
 
         .cont{
-            background-color: #ccc;
+            background-color: rgba(255, 255, 255, 0.8);
             min-height: 100px;
             border-radius: 8px;
 
@@ -69,9 +69,9 @@
             font-size: 20px;
             transition: 0.5s;
             height: 48px;
+            padding: 0 6px;
             line-height: 48px;
             overflow: hidden;
-            -webkit-box-reflect: below 1px linear-gradient(transparent, #0003);
             border-bottom: 1px solid #303136;
         }
 
@@ -87,10 +87,12 @@
         .index{
             font-size: 12px;
             width: 24px;
-            line-height: 24px;
+            /* padding: 0 6px; */
+            line-height: 22px;
             text-align: center;
             border: 1px solid #303136;
             border-radius: 100%;
+            color: #ccc;
         }
 
         .index_a .index{
@@ -105,6 +107,10 @@
             justify-content: flex-start;
         }
 
+        .content1{
+            width: 48px;
+        }
+
 
 
     </style>
@@ -112,9 +118,9 @@
  
 <body>
     <div id="ware">
-        <div id="content"></div>
+        <div class="content"></div>
         <div id="main"></div>
-        <!-- <div style="height: 20vh;"></div> -->
+        <div class="content1"></div>
     </div>
 
 
@@ -123,11 +129,9 @@
     <script>
         window.onload = function(){
             
-            localStorage.setItem("lastname", "Smith");
-            lastname = localStorage.getItem("lastname");
-            console.log(lastname)
-
-
+            // localStorage.setItem("lastname", "Smith");
+            // lastname = localStorage.getItem("lastname");
+            // console.log(lastname)
 
 
             words = `1
@@ -160,7 +164,7 @@
                 str1 += `<div class="index_w"><div class='index'>${i+1}</div></div>`
             }
             $('#main').append(str)
-            $('#content').append(str1)
+            $('.content').append(str1)
             console.log(list)
 
             $('.btn').click(function(event){
@@ -202,8 +206,12 @@
             })
             // 
             $('.index_w').click(function(){
-                console.log($(this).toggleClass("index_a"))
-            })
+                $(this).toggleClass("index_a");
+            });
+            // 
+            $(".index_w").scroll(function() {
+                $(this).toggleClass("index_a");
+            });
         }
     </script>
 </body>
