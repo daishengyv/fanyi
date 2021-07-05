@@ -21,6 +21,7 @@
  
         #main{
             padding: 0 0 100px;
+            flex: 1;
         }
 
         .popup{
@@ -62,9 +63,9 @@
         }
 
         .btn{
-            display: flex;
+            /* display: flex;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: flex-start; */
             font-size: 20px;
             transition: 0.5s;
             height: 48px;
@@ -80,7 +81,7 @@
             display: flex;
             align-items: center;
             justify-content: space-around;
-            border-bottom: 1px solid #303136;
+            border-bottom: 1px solid transparent;
         }
 
         .index{
@@ -153,7 +154,7 @@
             for(let i=0;i<words.length;i++){
                 word = words[i].trim()
                 list.push(word)
-                str += `<div class='btn'><div></div><div>${word}</div><div></div></div>`
+                str += `<div class='btn'>${word}</div>`
                 str1 += `<div class="index_w"><div class='index'>${i+1}</div></div>`
             }
             $('#main').append(str)
