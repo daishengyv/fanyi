@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>add</title>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+    <link rel="stylesheet" href="./style.css">
+</head>
+ 
+<body>
+    <div class="ware">
+        <!-- 单元 -->
+        <div id="unit" class="hide show" onselectstart="return false;" unselectable="on"></div>
+        <div id="edit" class="hide">
+            <!-- 编辑内容 -->
+            <h3>title</h3>
+            <textarea id="add_title" autofocus maxlength='-1' placeholder='Please input' rows='4'></textarea>
+            <h3>word</h3>
+            <textarea id="add_cont" autofocus maxlength='-1' placeholder='Please input' rows='20'></textarea>
+            <div class="fa">
+                <button class="btn">submit</button>
+                <button class="add_word">cancel</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.onload = function(){
+            // 
+            dg_fanyi = localStorage.getItem("dg_fanyi");
+            console.log('dg_fanyi1:',dg_fanyi)
+            if(!dg_fanyi){
+                var dg = {1:{'title':'t1','word':[1,2,3,4,5,6]},length:1}
+                localStorage.setItem("dg_fanyi", JSON.stringify(dg));
+            }
+            dg_fanyi = localStorage.getItem("dg_fanyi");
+            dg_fanyi = JSON.parse(dg_fanyi)
+            console.log('dg_fanyi2:',dg_fanyi)
+            render_unit()
+            // 渲染添加
+            function show_add(){
+                $('#unit').toggleClass('show')
+                $('#edit').toggleClass('show')
+            }
+            // 渲染单元
+            function render_unit(){
+                $('#unit').html('<div class="an add_word">ADD</div>')
+                // 添加word
+                $('.add_word').click(function(){show_add()})
+                unit_str = ''
+                for(let key in dg_fanyi){
+                    if(dg_fanyi[key].title){
+                        unit_str += `<div class="an into" data-i="${key}">${dg_fanyi[key].title}</div>`
+                    }
+                }
+                $('#unit').append(unit_str)
+                $('.into').click(function(even){
+                    console.log($(this)[0].dataset.i)
+                })
+            }
+            // 添加单元
+            $('.btn').click(function(){
+                add_title = $("#add_title").val()
+                add_cont = $("#add_cont").val()
+                add_title = add_title.trim()
+                add_cont = add_cont.trim()
+                if(add_title&&add_cont){
+                    var data = {}
+                    add_cont = add_cont.split('\n')
+                    data.title = add_title
+                    data.word = []
+                    for(let i=0;i<add_cont.length;i++){
+                        cont1 = add_cont[i].trim()
+                        if(cont1){
+                            data.word.push(cont1)
+                        }
+                    }
+                    dg_fanyi.length ++
+                    dg_fanyi[dg_fanyi.length] = data
+                    localStorage.setItem("dg_fanyi", JSON.stringify(dg_fanyi));
+                    console.log(dg_fanyi)
+                    render_unit()
+                    $("#add_title").val('')
+                    $("#add_cont").val('')
+                    show_add()
+                }else{
+                    alert('Please input ~ ~')
+                }
+            })
+        }
+    </script>
+</body>
+ 
+</html>

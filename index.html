@@ -6,212 +6,275 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>word</title>
     <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            font-family: '微软雅黑', sans-serif;
-            box-sizing: border-box;
-        }
- 
-        body {
-            background: #18191E;
-            color: #F9FDFE;
-        }
- 
-        #main{
-            padding: 0 0 100px;
-            flex: 1;
-        }
-
-        .popup{
-            width: 100%;
-            position: absolute;
-            left: 0;
-            right: 0;
-            margin: 0 auto;
-            bottom: 0;
-        }
-
-        .san1{
-            border:10px solid transparent;
-            border-top-color:rgba(255, 255, 255, 0.8);
-            margin: 0 auto -10px;
-            display:block;
-            width: 20px;
-        }
-
-        .san2{
-            border:10px solid transparent;
-            border-bottom-color:rgba(255, 255, 255, 0.8);
-            margin: -10px auto 0;
-            display:block;
-            width: 20px;
-        }
-
-        .cont{
-            background-color: rgba(255, 255, 255, 0.8);
-            min-height: 100px;
-            border-radius: 8px;
-
-        }
-
-        .popup_w{
-            position: relative;
-            height: 1px;
-            width: 100%;
-        }
-
-        .btn{
-            /* display: flex;
-            align-items: center;
-            justify-content: flex-start; */
-            font-size: 20px;
-            transition: 0.5s;
-            height: 48px;
-            padding: 0 6px;
-            line-height: 48px;
-            overflow: hidden;
-            border-bottom: 1px solid #303136;
-        }
-
-        .index_w{
-            height: 48px;
-            width: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            border-bottom: 1px solid transparent;
-        }
-
-        .index{
-            font-size: 12px;
-            width: 24px;
-            /* padding: 0 6px; */
-            line-height: 22px;
-            text-align: center;
-            border: 1px solid #303136;
-            border-radius: 100%;
-            color: #ccc;
-        }
-
-        .index_a .index{
-            background-color: #1A967E;
-            color: #F9FDFE;
-            border-color: #1A967E;
-        }
-        
-        #ware{
-            display: flex;
-            align-items: flex-start;
-            justify-content: flex-start;
-        }
-
-        .content1{
-            width: 48px;
-        }
-
-
-
-    </style>
+    <script src="./md5.js"></script>
+    <link rel="stylesheet" href="./style.css">
 </head>
  
 <body>
-    <div id="ware">
-        <div class="content"></div>
-        <div id="main"></div>
-        <div class="content1"></div>
+
+    <div class="ware">
+        <!-- 单元 -->
+        <div id="unit" class="hide show" onselectstart="return false;" unselectable="on"></div>
+        <!-- 编辑内容 -->
+        <div id="edit" class="hide">
+            <h3>title</h3>
+            <textarea id="add_title" autofocus maxlength='-1' placeholder='Please input' rows='4'></textarea>
+            <h3>word</h3>
+            <textarea id="add_cont" autofocus maxlength='-1' placeholder='Please input' rows='20'></textarea>
+            <div class="fa">
+                <button class="btn">submit</button>
+                <button class="add_word">cancel</button>
+            </div>
+        </div>
+        <!-- 详情 -->
+        <div id="ware" class="hide">
+            <div class="content"></div>
+            <div id="main"></div>
+            <div class="content1"></div>
+            <div class="back an">BACK</div>
+        </div>
     </div>
 
 
 
-    
     <script>
         window.onload = function(){
-            
-            // localStorage.setItem("lastname", "Smith");
-            // lastname = localStorage.getItem("lastname");
-            // console.log(lastname)
-
-
-            words = `1
-            2
-            3
-            4
-            5
-            6
-            7
-            8
-            9
-            10
-            11
-            12
-            13
-            14
-            15
-            16
-            17
-            18
-            19`
-            words = words.split('\n')
-            str = ''
-            str1 = ''
-            list = []
-            for(let i=0;i<words.length;i++){
-                word = words[i].trim()
-                list.push(word)
-                str += `<div class='btn'>${word}</div>`
-                str1 += `<div class="index_w"><div class='index'>${i+1}</div></div>`
+            // 
+            var timeout ; 
+            var todo = true;
+            let edit_index = ''
+            var dg_fanyi = localStorage.getItem("dg_fanyi");
+            if(!dg_fanyi){
+                var dg = {1:{'title':'t1','word':[1,2,3,4,5,6]},length:1}
+                localStorage.setItem("dg_fanyi", JSON.stringify(dg));
             }
-            $('#main').append(str)
-            $('.content').append(str1)
-            console.log(list)
+            dg_fanyi = localStorage.getItem("dg_fanyi");
+            dg_fanyi = JSON.parse(dg_fanyi)
+            console.log('dg_fanyi2:',dg_fanyi)
+            render_unit()
+            // 渲染添加
+            function show_add(){
+                $('#unit').toggleClass('show')
+                $('#edit').toggleClass('show')
+            }
+            // 渲染添加
+            function show_detail(){
+                $('#unit').toggleClass('show')
+                $('#ware').toggleClass('show')
+            }
+            // 翻译代码
+            function fanyi(query){
+                // $('.popup_w').css({"display":"block"})
+                console.log($('.popup_w'))
+                // return
 
-            $('.btn').click(function(event){
-                console.log(event)
-                $('.popup_w').remove()
-                san1 = ''
-                san2 = ''
-                index = list.indexOf($(this)[0].outerText)
-                if(event.clientY/$(window).height()>0.5){
-                    san1 = '<div class="san1"></div>'
-                    popup = `<div class="popup_w"><div class="popup">${san2}<div class="cont"></div>${san1}</div></div>`
-                    $(this).before(popup)
+                // var appid = '20210702000878013';
+                // var key = 'fDtFaXiQRoxp6V_cmICB';
+                // var salt = (new Date).getTime();
+                // // var query = '苹果';
+                // // 多个query可以用\n连接  如 query='apple\norange\nbanana\npear'
+                // var from = 'en';
+                // var to = 'zh';
+                // var str1 = appid + query + salt +key;
+                // var sign = MD5(str1);
+
+                // $.ajax({
+                // url: 'http://api.fanyi.baidu.com/api/trans/vip/translate',
+                // type: 'get',
+                // dataType: 'jsonp',
+                // data: {
+                //     q: query,
+                //     appid: appid,
+                //     salt: salt,
+                //     from: from,
+                //     to: to,
+                //     sign: sign,
+                //     tts:0,
+                //     dict:0
+                // },
+                // success: function (data) {
+                // console.log(data);
+                // $('.cont').html(data.trans_result[0].dst)
+                // $('.popup_w').css({"display":"block"})
+                // } 
+                // });
+            }
+            // 渲染单元
+            function render_unit(){
+                $('#unit').html('<div class="an add_word">ADD</div>')
+                // 添加word
+                $('.add_word').click(function(){show_add()})
+                unit_str = ''
+                for(let key in dg_fanyi){
+                    if(dg_fanyi[key].title){
+                        unit_str += `<div class="an into" data-i="${key}">${dg_fanyi[key].title}</div>`
+                    }
+                }
+                $('#unit').append(unit_str)
+
+                // 
+                $('.into').dblclick(function(){
+                    $('.popup_w').remove()
+                    console.log($(this))
+                    todo = false
+                    clearTimeout(timeout);
+                    popup = `<div class="popup_w"><div class="popup" style="top:0;"><div class="san2"></div><div class="cont" style='padding:0;'>
+                        <div class="edit_word" data-i="${$(this)[0].dataset.i}">edit</div>
+                        <div class="del_word">delete</div>
+                        </div></div></div>`
+                    // $(this).after(popup)
+                    $(this).append(popup)
+                    // 
+                    $('.edit_word').click(function(event){
+                        var self = this;
+                        let data = dg_fanyi[$(self)[0].dataset.i]
+                        edit_index = $(self)[0].dataset.i
+                        console.log(data)
+                        $("#add_title").val(data.title)
+                        $("#add_cont").val(data.word.join('\n'))
+                        show_add()
+                        $('.popup_w').remove()
+                        event.stopPropagation()
+                    })
+                    // 
+                    $('.del_word').click(function(){
+                        
+                    })
+                })
+                // 
+                $('.into').click(function(even){
+                    var self = this;
+                    timeout = setTimeout(function() { 
+                        if(!todo){
+                            todo = true
+                            return
+                        }
+                        show_detail()
+                        $('#main').html('')
+                        $('.content').html('')
+                        words = dg_fanyi[$(self)[0].dataset.i].word
+                        str = ''
+                        str1 = ''
+                        list = []
+                        for(let j=0;j<words.length;j++){
+                        word = words[j].trim()
+                        list.push(word)
+                        str += `<div class='btn'>${word}</div>`
+                        str1 += `<div class="index_w"><div class='index'>${j+1}</div></div>`
+                        }
+                        $('#main').append(str)
+                        $('.content').append(str1)
+                        // word 点击事件
+                        $('.btn').click(function(event){
+                        console.log(event)
+                        console.log($(self)[0].innerHTML.trim())
+                        $('.popup_w').remove()
+                        san1 = ''
+                        san2 = ''
+                        index = list.indexOf($(self)[0].outerText)
+                        if(event.clientY/$(window).height()>0.5){
+                        san1 = '<div class="san1"></div>'
+                        popup = `<div class="popup_w"><div class="popup">${san2}<div class="cont">${fanyi($(self)[0].innerHTML.trim())}</div>${san1}</div></div>`
+                        $(self).before(popup)
+                        }else{
+                        san2 = '<div class="san2"></div>'
+                        popup = `<div class="popup_w"><div class="popup" style="top:0;">${san2}<div class="cont">${fanyi($(self)[0].innerHTML.trim())}</div>${san1}</div></div>`
+                        $(self).after(popup)
+                        }
+
+                        // $('html,body').animate({scrollTop:index*40},'slow')
+                        event.stopPropagation()
+                        })
+                        // 
+                        $('#main').click(function(event){$('.popup_w').remove()})
+                        // 
+                        $('.btn').dblclick(function(){
+                        $('.popup_w').remove()
+                        console.log(list.indexOf($(self)[0].outerText),$(self)[0].outerText)
+                        index = list.indexOf($(self)[0].outerText)
+                        if(index != -1){
+                        del_i = list.splice(index, 1)[0]
+                        list.unshift(del_i)
+                        }
+                        console.log(list)
+                        $('#main').prepend($(self))
+                        })
+                        // 
+                        $('.index_w').click(function(){
+                        $(self).toggleClass("index_a");
+                        });
+                        // 
+                        $(".index_w").scroll(function() {
+                        $(self).toggleClass("index_a");
+                        });
+                        // 长按word
+                        $(".btn").mousedown(function() { 
+                        var self = this;
+                        timeout = setTimeout(function() { 
+                        $('.popup_w').remove()
+                        console.log(list.indexOf($(self)[0].outerText),$(self)[0].outerText)
+                        index = list.indexOf($(self)[0].outerText)
+                        if(index != -1){
+                        del_i = list.splice(index, 1)[0]
+                        list.unshift(del_i)
+                        }
+                        console.log(list)
+                        $('#main').prepend($(self))
+                        }, 1200); 
+                        }); 
+                        $(".btn").mouseup(function() { 
+                        clearTimeout(timeout); 
+                        }); 
+                        $(".btn").mouseout(function() { 
+                        clearTimeout(timeout);
+                        }); 
+                        // 
+
+                    },600)
+
+                })
+            }
+            // 添加单元
+            $('.btn').click(function(){
+
+                add_title = $("#add_title").val()
+                add_cont = $("#add_cont").val()
+                add_title = add_title.trim()
+                add_cont = add_cont.trim()
+                if(add_title&&add_cont){
+                    var data = {}
+                    add_cont = add_cont.split('\n')
+                    data.title = add_title
+                    data.word = []
+                    for(let i=0;i<add_cont.length;i++){
+                        cont1 = add_cont[i].trim()
+                        if(cont1){
+                            data.word.push(cont1)
+                        }
+                    }
+                    if(edit_index===''){
+                        dg_fanyi.length ++
+                        dg_fanyi[dg_fanyi.length] = data
+                    }else{
+                        dg_fanyi[edit_index] = data
+                    }
+                    localStorage.setItem("dg_fanyi", JSON.stringify(dg_fanyi));
+                    console.log(dg_fanyi)
+                    render_unit()
+                    $("#add_title").val('')
+                    $("#add_cont").val('')
+                    show_add()
+                    edit_index = ''
                 }else{
-                    san2 = '<div class="san2"></div>'
-                    popup = `<div class="popup_w"><div class="popup" style="top:0;">${san2}<div class="cont"></div>${san1}</div></div>`
-                    $(this).after(popup)
+                    alert('Please input ~ ~')
                 }
-
-                $('html,body').animate({scrollTop:index*40},'slow')
-
-
-                event.stopPropagation()
-            })
-
-            $('#main').click(function(event){
-                $('.popup_w').remove()
-            })
-
-            $('.btn').dblclick(function(){
-                $('.popup_w').remove()
-                console.log(list.indexOf($(this)[0].outerText),$(this)[0].outerText)
-                index = list.indexOf($(this)[0].outerText)
-                if(index != -1){
-                    del_i = list.splice(index, 1)[0]
-                    list.unshift(del_i)
-                }
-                console.log(list)
-                $('#main').prepend($(this))
             })
             // 
-            $('.index_w').click(function(){
-                $(this).toggleClass("index_a");
-            });
-            // 
-            $(".index_w").scroll(function() {
-                $(this).toggleClass("index_a");
-            });
+            $('.back').click(function(){
+                show_detail()
+            })
+
+            // --------------------------------------------------------
         }
     </script>
 </body>

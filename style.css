@@ -1,0 +1,179 @@
+body{
+    background: #18191E;
+    color: #F9FDFE;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: '微软雅黑', sans-serif;
+    box-sizing: border-box;
+}
+
+#main{
+    flex: 1;
+    min-height: 100vh;
+}
+
+.popup{
+    width: 100%;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    bottom: 0;
+}
+
+.san1{
+    border:10px solid transparent;
+    border-top-color:rgba(255, 255, 255, 0.8);
+    margin: 0 auto -10px;
+    display:block;
+    width: 20px;
+}
+
+.san2{
+    border:10px solid transparent;
+    border-bottom-color:rgba(255, 255, 255, 0.8);
+    margin: -10px auto 0;
+    display:block;
+    width: 20px;
+}
+
+.cont{
+    background-color: rgba(255, 255, 255, 0.9);
+    min-height: 100px;
+    border-radius: 8px;
+    color: #18191E;
+    padding: 10px;
+
+}
+
+.popup_w{
+    position: relative;
+    height: 1px;
+    width: 100%;
+    /* display: none; */
+}
+
+.btn{
+    /* display: flex;
+    align-items: center;
+    justify-content: flex-start; */
+    font-size: 20px;
+    transition: 0.5s;
+    height: 48px;
+    padding: 0 6px;
+    line-height: 48px;
+    overflow: hidden;
+    border-bottom: 1px solid #303136;
+}
+
+.index_w{
+    height: 48px;
+    width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    border-bottom: 1px solid transparent;
+}
+
+.index{
+    font-size: 12px;
+    width: 24px;
+    /* padding: 0 6px; */
+    line-height: 22px;
+    text-align: center;
+    border: 1px solid #303136;
+    border-radius: 100%;
+    color: #ccc;
+}
+
+.index_a .index{
+    background-color: #1A967E;
+    color: #F9FDFE;
+    border-color: #1A967E;
+}
+
+#ware{
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.content1{
+    width: 30px;
+}
+
+.ware{
+    min-width: 90%;
+    margin: 0 auto;
+}
+
+textarea{
+    width: 100%;
+    background: #18191E;
+    color: #F9FDFE;
+    border-radius: 6px;
+}
+
+.an{
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    border-radius: 100%;
+    border: 2px solid #ccc;
+    font-size: 14px;
+    margin: 6px;
+    position: relative;
+}
+
+#edit{
+    padding: 10px;
+}
+
+#unit{
+    min-height: 100vh;
+}
+
+#unit .an{
+    display: inline-block;
+}
+
+.hide{
+    display: none;
+    height: 0;
+    width: 0;
+    overflow: hidden;
+}
+
+.show{
+    display: block;
+    height: auto;
+    width: auto;
+    overflow: auto;
+}
+
+button{
+    border-radius: 100px;
+    width: 40%;
+    line-height: 36px;
+    background-color: #29a1f7;
+    color: #fff;
+    border-color: transparent;
+    margin-top: 16px;
+    font-size:18px;
+}
+
+.fa{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.back{
+    position: fixed;
+    right: 0;
+    bottom: 10%;
+}
