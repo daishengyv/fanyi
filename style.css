@@ -56,7 +56,7 @@ body{
     /* display: none; */
 }
 
-.btn{
+.fanyi_word{
     /* display: flex;
     align-items: center;
     justify-content: flex-start; */
@@ -103,6 +103,8 @@ body{
 
 .content1{
     width: 30px;
+    height: 100vh;
+    position: relative;
 }
 
 .ware{
@@ -115,6 +117,7 @@ textarea{
     background: #18191E;
     color: #F9FDFE;
     border-radius: 6px;
+    padding: 6px;
 }
 
 .an{
@@ -135,6 +138,7 @@ textarea{
 
 #unit{
     min-height: 100vh;
+    padding-top: 30px;
 }
 
 #unit .an{
@@ -172,8 +176,16 @@ button{
     justify-content: space-around;
 }
 
-.back{
+.back_to_home{
     position: fixed;
     right: 0;
     bottom: 10%;
+    min-width: 50px;
+    min-height: 50px;
+    line-height: 50px;
+    text-align: center;
+    border-radius: 100%;
+    border: 2px solid #ccc;
+    font-size: 14px;
+    margin: 6px;
 }
