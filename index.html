@@ -3,14 +3,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" name="viewport" />
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <!-- <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" name="viewport" /> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>word</title>
     <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
     <script src="./md5.js"></script>
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
+
+    <div class="h_word_means">
+        <span>1</span><span>2</span><span>3</span>
+    </div>
+
     <div class="ware">
         <!-- 单元 -->
         <div id="unit" class="hide show" onselectstart="return false;" unselectable="on"></div>
@@ -34,6 +40,8 @@
         </div>
     </div>
 
+
+    
     <script>
         window.onload = function(){
             // 
@@ -42,13 +50,17 @@
             let edit_index = ''
             var dg_fanyi = localStorage.getItem("dg_fanyi");
             if(!dg_fanyi){
-                var dg = {1:{'title':'t1','word':[1,2,3,4,5,6]},length:1}
-                localStorage.setItem("dg_fanyi", JSON.stringify(dg));
+                init_app()
             }
             dg_fanyi = localStorage.getItem("dg_fanyi");
             dg_fanyi = JSON.parse(dg_fanyi)
             console.log('dg_fanyi2:',dg_fanyi)
             render_unit()
+            // 初始化 
+            function init_app(){
+                var dg = {1:{'title':'t1','word':[{val:1,act:0}, {val:2,act:0}]},length:1}
+                localStorage.setItem("dg_fanyi", JSON.stringify(dg));
+            }
             // 渲染添加
             function show_add(){
                 $('#unit').toggleClass('show')
@@ -60,52 +72,102 @@
                 $('#ware').toggleClass('show')
                 $('.back_to_home').toggleClass('show')
             }
+            // 
+            function update_act(){
+                var str1 = '';
+                $('.content').html('')
+                words = dg_fanyi[edit_index].word
+                for(let j=0;j<words.length;j++){
+                    word = words[j]
+                    str1 += `<div class="index_w word_act${word.act}" data-act='${word.act}' data-i='${j}'><div class='index'>${j+1}</div></div>`
+                }
+                $('.content').append(str1)
+                $('.index_w').click(function(){
+                    let index = $(this)[0].dataset.i;
+                    dg_fanyi[edit_index].word[index].act = dg_fanyi[edit_index].word[index].act==1?0:1;
+                    localStorage.setItem("dg_fanyi", JSON.stringify(dg_fanyi));
+                    $(this).toggleClass("word_act1");
+                });
+            }
             // 翻译代码
             function fanyi(query){
                 // $('.popup_w').css({"display":"block"})
-                console.log($('.popup_w'))
-                // return
+                console.log('111111111111111111',query)
+                var appid = '20210702000878013';
+                var key = 'fDtFaXiQRoxp6V_cmICB';
+                var salt = (new Date).getTime();
+                // var query = '苹果';
+                // 多个query可以用\n连接  如 query='apple\norange\nbanana\npear'
+                var from = 'en';
+                var to = 'zh';
+                var str1 = appid + query + salt +key;
+                var sign = MD5(str1);
 
-                // var appid = '20210702000878013';
-                // var key = 'fDtFaXiQRoxp6V_cmICB';
-                // var salt = (new Date).getTime();
-                // // var query = '苹果';
-                // // 多个query可以用\n连接  如 query='apple\norange\nbanana\npear'
-                // var from = 'en';
-                // var to = 'zh';
-                // var str1 = appid + query + salt +key;
-                // var sign = MD5(str1);
+                $.ajax({
+                url: 'http://api.fanyi.baidu.com/api/trans/vip/translate',
+                type: 'get',
+                dataType: 'jsonp',
+                data: {
+                    q: query,
+                    appid: appid,
+                    salt: salt,
+                    from: from,
+                    to: to,
+                    sign: sign,
+                    tts:0,
+                    dict:0
+                },
+                success: function (data) {
+                    h_cont = ''
+                    h_word_means = ''
+                    h_dict = ''
+                    console.log(data);
+                    if(data && data.trans_result && data.trans_result[0].dst){
+                        dict = JSON.parse(data.trans_result[0].dict)
+                        console.log(dict)
+                        h_cont += `<h4>${data.trans_result[0].dst}</h4>`
+                        
+                        if(dict.word_result.simple_means){
+                            word_means = dict.word_result.simple_means.word_means
+                            word_means.forEach(val =>{
+                                h_word_means +=`<span>${val}</span>`
+                            })
+                            h_cont +=`<div style='font-size:14px;'>${dict.word_result.simple_means.memory_skill}</div>`
+                            h_cont +=`<div class='h_word_means'>${h_word_means}</div>`
+                        }
 
-                // $.ajax({
-                // url: 'http://api.fanyi.baidu.com/api/trans/vip/translate',
-                // type: 'get',
-                // dataType: 'jsonp',
-                // data: {
-                //     q: query,
-                //     appid: appid,
-                //     salt: salt,
-                //     from: from,
-                //     to: to,
-                //     sign: sign,
-                //     tts:0,
-                //     dict:0
-                // },
-                // success: function (data) {
-                // console.log(data);
-                // $('.cont').html(data.trans_result[0].dst)
-                // $('.popup_w').css({"display":"block"})
-                // } 
-                // });
+                        if(dict.word_result.edict.item[0].tr_group){
+                            dict.word_result.edict.item[0].tr_group.forEach(val =>{
+                                if(val.example[0]){
+                                    h_dict += `<div style='margin-bottom:4px;'>${val.example[0]}</div>`
+                                }
+                            })
+                            h_cont +=`<div style='font-size:13px;'>${h_dict}</div>`
+                        }
+
+                        $('.cont').html(h_cont)
+                    }
+                } 
+                });
+                return 'loading~~'
             }
             // 渲染单元
             function render_unit(){
-                $('#unit').html('<div class="an add_word">ADD</div>')
+                $('#unit').html('<div class="an init_word">INIT</div><div class="an add_word">ADD</div>')
                 // 添加word
                 $('.add_word').click(function(event){
                     $("#add_title").val('')
                     $("#add_cont").val('')
                     show_add()
                     event.stopPropagation()
+                })
+                $('.init_word').click(function(){
+		            var r = confirm("重启会清空内容，请确认！")
+                    if(r){
+                        init_app()
+                        render_unit()
+                        location.reload(true)  
+                    }
                 })
                 unit_str = ''
                 for(let key in dg_fanyi){
@@ -129,23 +191,28 @@
                     $(this).append(popup)
                     // 
                     $('.edit_word').click(function(event){
-                        var self = this;
-                        let data = dg_fanyi[$(self)[0].dataset.i]
+                        let self = this,data = dg_fanyi[$(self)[0].dataset.i],words=[];
                         edit_index = $(self)[0].dataset.i
                         console.log(data)
+                        data.word.forEach(element => {
+                            if(element.val){
+                                words.push(element.val)
+                            }
+                        });
                         $("#add_title").val(data.title)
-                        $("#add_cont").val(data.word.join('\n'))
+                        $("#add_cont").val(words.join('\n'))
                         show_add()
                         $('.popup_w').remove()
                         event.stopPropagation()
                     })
                     // 
                     $('.del_word').click(function(event){
-                        var self = this;
-                        delete dg_fanyi[$(self)[0].dataset.i]
-                        localStorage.setItem("dg_fanyi", JSON.stringify(dg_fanyi));
-                        console.log(dg_fanyi)
-                        render_unit()
+                        var r = confirm("请确认删除！")
+                        if(r){
+                            delete dg_fanyi[$(this)[0].dataset.i]
+                            localStorage.setItem("dg_fanyi", JSON.stringify(dg_fanyi));
+                            render_unit()
+                        }
                         $('.popup_w').remove()
                         event.stopPropagation()
                     })
@@ -161,79 +228,77 @@
                         show_detail()
                         $('#main').html('')
                         $('.content').html('')
+                        edit_index = $(self)[0].dataset.i
                         words = dg_fanyi[$(self)[0].dataset.i].word
                         for(let j=0;j<words.length;j++){
-                            word = words[j].trim()
-                            list.push(word)
-                            str += `<div class='fanyi_word'>${word}</div>`
-                            str1 += `<div class="index_w"><div class='index'>${j+1}</div></div>`
+                            word = words[j]
+                            list.push(word.val.trim())
+                            str += `<div class='fanyi_word'>${word.val.trim()}</div>`
+                            str1 += `<div class="index_w word_act${word.act}" data-act='${word.act}' data-i='${j}'><div class='index'>${j+1}</div></div>`
                         }
                         $('#main').append(str)
                         $('.content').append(str1)
                         // word 点击事件
                         $('.fanyi_word').click(function(event){
                             var self = this;
-                            console.log(event,$(self)[0].innerHTML.trim())
-                            var san1 = '',san2 = '',index = list.indexOf($(self)[0].outerText);
-                            $('.popup_w').remove()
-                            if(event.clientY/$(window).height()>0.5){
-                                san1 = '<div class="san1"></div>'
-                                popup = `<div class="popup_w"><div class="popup">${san2}<div class="cont">${fanyi($(self)[0].innerHTML.trim())}</div>${san1}</div></div>`
-                                $(self).before(popup)
-                            }else{
-                                san2 = '<div class="san2"></div>'
-                                popup = `<div class="popup_w"><div class="popup" style="top:0;">${san2}<div class="cont">${fanyi($(self)[0].innerHTML.trim())}</div>${san1}</div></div>`
-                                $(self).after(popup)
-                            }
-                            // $('html,body').animate({scrollTop:index*40},'slow')
-                            event.stopPropagation()
+                            timeout = setTimeout(function() { 
+                                var san1 = '',san2 = '',index = list.indexOf($(self)[0].outerText);
+                                console.log(event,$(self)[0].innerHTML.trim())
+                                if(!todo){
+                                    todo = true
+                                    return
+                                }
+                                $('.popup_w').remove()
+                                if(event.clientY/$(window).height()>0.5){
+                                    san1 = '<div class="san1"></div>'
+                                    popup = `<div class="popup_w"><div class="popup">${san2}<div class="cont">${fanyi($(self)[0].innerHTML.trim())}</div>${san1}</div></div>`
+                                    $(self).before(popup)
+                                }else{
+                                    san2 = '<div class="san2"></div>'
+                                    popup = `<div class="popup_w"><div class="popup" style="top:0;">${san2}<div class="cont">${fanyi($(self)[0].innerHTML.trim())}</div>${san1}</div></div>`
+                                    $(self).after(popup)
+                                }
+                                // $('html,body').animate({scrollTop:index*40},'slow')
+                                event.stopPropagation()
+                            },100)
                         })
                         // 
                         $('#main').click(function(event){
                             $('.popup_w').remove()
                         })
-                        // 双击移动
+                        // word块移动业务---------------------------------------------------------------------
                         $('.fanyi_word').dblclick(function(){
                             var self = this;
+                            todo = false
+                            clearTimeout(timeout);
                             $('.popup_w').remove()
                             console.log(list.indexOf($(self)[0].outerText),$(self)[0].outerText)
                             index = list.indexOf($(self)[0].outerText)
                             if(index != -1){
                                 del_i = list.splice(index, 1)[0]
                                 list.unshift(del_i)
+                                del_item = dg_fanyi[edit_index].word.splice(index, 1)[0];
+                                dg_fanyi[edit_index].word.unshift(del_item);
+                                localStorage.setItem("dg_fanyi", JSON.stringify(dg_fanyi));
+                                update_act()
+                                $('#main').prepend($(self));
                             }
-                            $('#main').prepend($(self))
                         })
-                        // 
-                        $('.index_w').click(function(){
-                            $(this).toggleClass("index_a");
-                        });
-                        // 
-                        $(".index_w").scroll(function() {
-                            $(this).toggleClass("index_a");
-                            console.log('index_w scroll',)
-                        });
-                        // 
-                        $(".index_w").mouseout(function() { 
-                            $(this).toggleClass("index_a");
-                        }); 
-
-                        // $("div").scroll(function() {
-                        //     $("span").text(x+=1);
-                        // });
-
                         // 长按word
                         $(".fanyi_word").mousedown(function() { 
                             var self = this;
                             timeout = setTimeout(function() { 
                                 $('.popup_w').remove()
-                                // console.log(list.indexOf($(self)[0].outerText),$(self)[0].outerText)
                                 index = list.indexOf($(self)[0].outerText)
                                 if(index != -1){
                                     del_i = list.splice(index, 1)[0]
                                     list.unshift(del_i)
+                                    del_item = dg_fanyi[edit_index].word.splice(index, 1)[0];
+                                    dg_fanyi[edit_index].word.unshift(del_item);
+                                    localStorage.setItem("dg_fanyi", JSON.stringify(dg_fanyi));
+                                    update_act()
+                                    $('#main').prepend($(self));
                                 }
-                                $('#main').prepend($(self))
                             }, 1200); 
                         }); 
                         $(".fanyi_word").mouseup(function() { 
@@ -242,8 +307,27 @@
                         $(".fanyi_word").mouseout(function() { 
                             clearTimeout(timeout);
                         }); 
+                        // -----------------------------------------------------------------------
+                        $('.index_w').click(function(){
+                            let index = $(this)[0].dataset.i;
+                            dg_fanyi[edit_index].word[index].act = dg_fanyi[edit_index].word[index].act==1?0:1;
+                            localStorage.setItem("dg_fanyi", JSON.stringify(dg_fanyi));
+                            $(this).toggleClass("word_act1");
+                        });
                         // 
-                    },600)
+                        // $(".index_w").scroll(function() {
+                        //     $(this).toggleClass("index_a");
+                        //     console.log('index_w scroll',)
+                        // });
+                        // 
+                        // $(".index_w").mouseout(function() { 
+                        //     $(this).toggleClass("index_a");
+                        // }); 
+
+                        // $("div").scroll(function() {
+                        //     $("span").text(x+=1);
+                        // });
+                    },200)
 
                 })
             }
@@ -262,7 +346,7 @@
                     for(let i=0;i<add_cont.length;i++){
                         cont1 = add_cont[i].trim()
                         if(cont1){
-                            data.word.push(cont1)
+                            data.word.push({'val':cont1,'act':0})
                         }
                     }
                     if(edit_index===''){
@@ -284,6 +368,7 @@
             })
             // 
             $('.back_to_home').click(function(){
+                edit_index = ''
                 show_detail()
             })
             // 
