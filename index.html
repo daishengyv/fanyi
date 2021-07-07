@@ -86,64 +86,69 @@
             }
             // 翻译代码
             function fanyi(query){
-                // $('.popup_w').css({"display":"block"})
-                console.log('111111111111111111',query)
-                var appid = '20210702000878013';
-                var key = 'fDtFaXiQRoxp6V_cmICB';
-                var salt = (new Date).getTime();
-                // var query = '苹果';
-                // 多个query可以用\n连接  如 query='apple\norange\nbanana\npear'
-                var from = 'en';
-                var to = 'zh';
-                var str1 = appid + query + salt +key;
-                var sign = MD5(str1);
+                try {
+                    console.log('111111111111111111',query)
+                    var appid = '20210702000878013';
+                    var key = 'fDtFaXiQRoxp6V_cmICB';
+                    var salt = (new Date).getTime();
+                    // var query = '苹果';
+                    // 多个query可以用\n连接  如 query='apple\norange\nbanana\npear'
+                    var from = 'en';
+                    var to = 'zh';
+                    var str1 = appid + query + salt +key;
+                    var sign = MD5(str1);
 
-                $.ajax({
-                url: 'http://api.fanyi.baidu.com/api/trans/vip/translate',
-                type: 'get',
-                dataType: 'jsonp',
-                data: {
-                    q: query,
-                    appid: appid,
-                    salt: salt,
-                    from: from,
-                    to: to,
-                    sign: sign,
-                    tts:0,
-                    dict:0
-                },
-                success: function (data) {
-                    h_cont = ''
-                    h_word_means = ''
-                    h_dict = ''
-                    console.log(data);
-                    if(data && data.trans_result && data.trans_result[0].dst){
-                        dict = JSON.parse(data.trans_result[0].dict)
-                        console.log(dict)
-                        h_cont += `<h4>${data.trans_result[0].dst}</h4>`
-                        
-                        if(dict.word_result.simple_means){
-                            word_means = dict.word_result.simple_means.word_means
-                            word_means.forEach(val =>{
-                                h_word_means +=`<span>${val}</span>`
-                            })
-                            h_cont +=`<div style='font-size:14px;'>${dict.word_result.simple_means.memory_skill}</div>`
-                            h_cont +=`<div class='h_word_means'>${h_word_means}</div>`
+                    $.ajax({
+                    url: 'http://api.fanyi.baidu.com/api/trans/vip/translate',
+                    type: 'get',
+                    dataType: 'jsonp',
+                    data: {
+                        q: query,
+                        appid: appid,
+                        salt: salt,
+                        from: from,
+                        to: to,
+                        sign: sign,
+                        tts:0,
+                        dict:0
+                    },
+                    success: function (data) {
+                        h_cont = ''
+                        h_word_means = ''
+                        h_dict = ''
+                        console.log(data);
+                        if(data && data.trans_result && data.trans_result[0].dst){
+                            dict = JSON.parse(data.trans_result[0].dict)
+                            console.log(dict)
+                            h_cont += `<h4>${data.trans_result[0].dst}</h4>`
+                            
+                            if(dict.word_result.simple_means){
+                                word_means = dict.word_result.simple_means.word_means
+                                word_means.forEach(val =>{
+                                    h_word_means +=`<span>${val}</span>`
+                                })
+                                h_cont +=`<div style='font-size:14px;'>${dict.word_result.simple_means.memory_skill}</div>`
+                                h_cont +=`<div class='h_word_means'>${h_word_means}</div>`
+                            }
+
+                            if(dict.word_result.edict.item[0].tr_group){
+                                dict.word_result.edict.item[0].tr_group.forEach(val =>{
+                                    if(val.example[0]){
+                                        h_dict += `<div style='margin-bottom:4px;'>${val.example[0]}</div>`
+                                    }
+                                })
+                                h_cont +=`<div style='font-size:13px;'>${h_dict}</div>`
+                            }
+
+                            $('.cont').html(h_cont)
                         }
-
-                        if(dict.word_result.edict.item[0].tr_group){
-                            dict.word_result.edict.item[0].tr_group.forEach(val =>{
-                                if(val.example[0]){
-                                    h_dict += `<div style='margin-bottom:4px;'>${val.example[0]}</div>`
-                                }
-                            })
-                            h_cont +=`<div style='font-size:13px;'>${h_dict}</div>`
-                        }
-
-                        $('.cont').html(h_cont)
-                    }
-                } 
-                });
+                    } 
+                    });
+                }
+                catch(err){
+                    $('.popup_w').remove()
+                    alert('search error!')
+                }
                 return 'loading~~'
             }
             // 渲染单元
