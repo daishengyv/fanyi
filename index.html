@@ -36,7 +36,8 @@
     </div>
 
 
-    
+
+
     <script>
         window.onload = function(){
             // 
@@ -87,7 +88,6 @@
             // 翻译代码
             function fanyi(query){
                 try {
-                    console.log('111111111111111111',query)
                     var appid = '20210702000878013';
                     var key = 'fDtFaXiQRoxp6V_cmICB';
                     var salt = (new Date).getTime();
@@ -116,20 +116,50 @@
                         h_cont = ''
                         h_word_means = ''
                         h_dict = ''
-                        console.log(data);
+                        console.log('json', JSON.stringify(data)  );
                         if(data && data.trans_result && data.trans_result[0].dst){
+                            console.log(data)
                             dict = JSON.parse(data.trans_result[0].dict)
-                            console.log(dict)
+                            console.log(dict.word_result)
                             h_cont += `<h4>${data.trans_result[0].dst}</h4>`
-                            
+                            h_cont +=`<div class='word_ph'>
+                                        <div>英[${dict.word_result.simple_means.symbols[0].ph_am}]</div>
+                                        <div>美[${dict.word_result.simple_means.symbols[0].ph_en}]</div>
+                                        </div>`
+
+                            // <audio src="${dict.word_result.edict.item[0].dst_tts}"></audio>
+                            // <audio src="${dict.word_result.edict.item[0].src_tts}"></audio>
+                            parts = ''
+                            dict.word_result.simple_means.symbols[0].parts.forEach(val => {
+                                part = `<span>${val.part}</span>`
+                                means = ''
+                                val.means.forEach(val1=>{
+                                    means += `<span>${val1}</span>`
+                                })
+                                parts +=`<div class='h_word_means'>${part} ${means}</div>`
+                            })
+                            h_cont += parts
+                                        // 
                             if(dict.word_result.simple_means){
                                 word_means = dict.word_result.simple_means.word_means
                                 word_means.forEach(val =>{
                                     h_word_means +=`<span>${val}</span>`
                                 })
-                                h_cont +=`<div style='font-size:14px;'>${dict.word_result.simple_means.memory_skill}</div>`
-                                h_cont +=`<div class='h_word_means'>${h_word_means}</div>`
+                                // 技巧
+                                if(dict.word_result.simple_means.memory_skill){
+                                    h_cont +=`<div style='font-size:14px;'>${dict.word_result.simple_means.memory_skill}</div>`
+                                }
+
+                                // h_cont +=`<div class='h_word_means'>${h_word_means}</div>`
                             }
+
+                            // if(dict.word_result.edict.item[0].dst_tts){
+                            //     h_cont +=`<div class='h_word_means'><audio src="${dict.word_result.edict.item[0].dst_tts}"></audio></div>`
+                            // }
+
+                            // if(dict.word_result.edict.item[0].src_tts){
+                            //     h_cont +=`<div class='h_word_means'><audio src="${dict.word_result.edict.item[0].src_tts}"></audio></div>`
+                            // }
 
                             if(dict.word_result.edict.item[0].tr_group){
                                 dict.word_result.edict.item[0].tr_group.forEach(val =>{
@@ -139,6 +169,8 @@
                                 })
                                 h_cont +=`<div style='font-size:13px;'>${h_dict}</div>`
                             }
+
+                            h_cont +=`<div style='font-size:14px; text-align:right;'><a href="https://fanyi.baidu.com/?aldtype=16047#en/zh/${query}" target="_blank">more »</a></div>`
 
                             $('.cont').html(h_cont)
                         }
@@ -233,13 +265,16 @@
                         for(let j=0;j<words.length;j++){
                             word = words[j]
                             list.push(word.val.trim())
-                            str += `<div class='fanyi_word'>${word.val.trim()}</div>`
+                            str += `<div class='fanyi_word'>
+                                        <div class='fanyi_word_to'>${word.val.trim()}</div>
+                                        <div><a onselectstart="return false;" unselectable="on" href="https://fanyi.baidu.com/?aldtype=16047#en/zh/${word.val.trim()}" target="_blank">»</a></div>
+                                    </div>`
                             str1 += `<div class="index_w word_act${word.act}" data-act='${word.act}' data-i='${j}'><div class='index'>${j+1}</div></div>`
                         }
                         $('#main').append(str)
                         $('.content').append(str1)
                         // word 点击事件
-                        $('.fanyi_word').click(function(event){
+                        $('.fanyi_word_to').click(function(event){
                             var self = this;
                             timeout = setTimeout(function() { 
                                 var san1 = '',san2 = '',index = list.indexOf($(self)[0].outerText);
@@ -252,11 +287,11 @@
                                 if(event.clientY/$(window).height()>0.5){
                                     san1 = '<div class="san1"></div>'
                                     popup = `<div class="popup_w"><div class="popup">${san2}<div class="cont">${fanyi($(self)[0].innerHTML.trim())}</div>${san1}</div></div>`
-                                    $(self).before(popup)
+                                    $($(self).parent()).before(popup)
                                 }else{
                                     san2 = '<div class="san2"></div>'
                                     popup = `<div class="popup_w"><div class="popup" style="top:0;">${san2}<div class="cont">${fanyi($(self)[0].innerHTML.trim())}</div>${san1}</div></div>`
-                                    $(self).after(popup)
+                                    $($(self).parent()).after(popup)
                                 }
                                 // $('html,body').animate({scrollTop:index*40},'slow')
                                 event.stopPropagation()
