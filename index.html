@@ -54,7 +54,7 @@
             render_unit()
             // 初始化 
             function init_app(){
-                var dg = {1:{'title':'t1','word':[{val:1,act:0}, {val:2,act:0}]},length:1}
+                var dg = {1:{'title':'t1','word':[{val:'1',act:0,nf:0}, {val:'2',act:0,nf:0}]},length:1}
                 localStorage.setItem("dg_fanyi", JSON.stringify(dg));
             }
             // 渲染添加
@@ -130,6 +130,9 @@
                             // <audio src="${dict.word_result.edict.item[0].dst_tts}"></audio>
                             // <audio src="${dict.word_result.edict.item[0].src_tts}"></audio>
                             parts = ''
+                            if(!dict.word_result.simple_means.symbols[0].parts.length){
+                                return
+                            }
                             dict.word_result.simple_means.symbols[0].parts.forEach(val => {
                                 part = `<span>${val.part}</span>`
                                 means = ''
@@ -267,7 +270,7 @@
                             list.push(word.val.trim())
                             str += `<div class='fanyi_word'>
                                         <div class='fanyi_word_to'>${word.val.trim()}</div>
-                                        <div><a onselectstart="return false;" unselectable="on" href="https://fanyi.baidu.com/?aldtype=16047#en/zh/${word.val.trim()}" target="_blank">»</a></div>
+                                        <div class='fa' onselectstart="return false;" unselectable="on"><span style='font-size:12px;padding-right:6px;'>${word.nf?word.nf:''}</span><a href="https://fanyi.baidu.com/?aldtype=16047#en/zh/${word.val.trim()}" target="_blank">»</a></div>
                                     </div>`
                             str1 += `<div class="index_w word_act${word.act}" data-act='${word.act}' data-i='${j}'><div class='index'>${j+1}</div></div>`
                         }
@@ -295,7 +298,7 @@
                                 }
                                 // $('html,body').animate({scrollTop:index*40},'slow')
                                 event.stopPropagation()
-                            },100)
+                            },200)
                         })
                         // 
                         $('#main').click(function(event){
@@ -307,11 +310,12 @@
                             todo = false
                             clearTimeout(timeout);
                             $('.popup_w').remove()
-                            console.log(list.indexOf($(self)[0].outerText),$(self)[0].outerText)
-                            index = list.indexOf($(self)[0].outerText)
+                            // console.log(list,list.indexOf($(self)[0].outerText.split('\n')[0]),$(self)[0].outerText.split('\n')[0])
+                            index = list.indexOf($(self)[0].outerText.split('\n')[0])
                             if(index != -1){
                                 del_i = list.splice(index, 1)[0]
                                 list.unshift(del_i)
+                                dg_fanyi[edit_index].word[index].nf ++
                                 del_item = dg_fanyi[edit_index].word.splice(index, 1)[0];
                                 dg_fanyi[edit_index].word.unshift(del_item);
                                 localStorage.setItem("dg_fanyi", JSON.stringify(dg_fanyi));
@@ -324,10 +328,11 @@
                             var self = this;
                             timeout = setTimeout(function() { 
                                 $('.popup_w').remove()
-                                index = list.indexOf($(self)[0].outerText)
+                                index = list.indexOf($(self)[0].outerText.split('\n')[0])
                                 if(index != -1){
                                     del_i = list.splice(index, 1)[0]
                                     list.unshift(del_i)
+                                    dg_fanyi[edit_index].word[index].nf ++
                                     del_item = dg_fanyi[edit_index].word.splice(index, 1)[0];
                                     dg_fanyi[edit_index].word.unshift(del_item);
                                     localStorage.setItem("dg_fanyi", JSON.stringify(dg_fanyi));
@@ -381,7 +386,7 @@
                     for(let i=0;i<add_cont.length;i++){
                         cont1 = add_cont[i].trim()
                         if(cont1){
-                            data.word.push({'val':cont1,'act':0})
+                            data.word.push({'val':cont1,'act':0,nf:0})
                         }
                     }
                     if(edit_index===''){
