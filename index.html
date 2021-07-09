@@ -13,8 +13,15 @@
 </head>
 <body>
     <div class="ware">
+        <div id="userinfo" class="hide show">
+            <h3>user</h3>
+            <textarea id="submit_uid" autofocus maxlength='-1' placeholder='Please input uid' rows='4'></textarea>
+            <div class="fa">
+                <button class="submit_uid">submit</button>
+            </div>
+        </div>
         <!-- 单元 -->
-        <div id="unit" class="hide show" onselectstart="return false;" unselectable="on"></div>
+        <div id="unit" class="hide" onselectstart="return false;" unselectable="on"></div>
         <!-- 编辑内容 -->
         <div id="edit" class="hide">
             <h3>title</h3>
@@ -35,27 +42,49 @@
         </div>
     </div>
 
-
-
-
     <script>
         window.onload = function(){
             // 
             var timeout ; 
             var todo = true;
             let edit_index = ''
-            var dg_fanyi = localStorage.getItem("dg_fanyi");
-            if(!dg_fanyi){
-                init_app()
+            var dg_fanyi =''
+            // var dg_fanyi = localStorage.getItem("dg_fanyi");
+            var uid = localStorage.getItem("dg_uid");
+            // if(!dg_fanyi){
+            //     init_app()
+            // }
+            // dg_fanyi = localStorage.getItem("dg_fanyi");
+            // dg_fanyi = JSON.parse(dg_fanyi)
+            console.log(uid,'dg_fanyi2:',dg_fanyi)
+            if(uid){
+                get_data()
             }
-            dg_fanyi = localStorage.getItem("dg_fanyi");
-            dg_fanyi = JSON.parse(dg_fanyi)
-            console.log('dg_fanyi2:',dg_fanyi)
-            render_unit()
+            // 
+            function get_data(act,d,id=0){
+                let data = {
+                    "fy":"1",
+                    "uid":uid
+                }
+                if(act){data[act]=1}
+                if(d){data['d']=d}
+                if(id){data['id']=id}
+                $.post('https://test.anyou99.com/wedd/', JSON.stringify(data),
+                    function(msg){
+                        console.log('wedd:',msg)
+                        if(msg&&msg.data){
+                            dg_fanyi = msg.data
+                            render_unit()
+                            show_unit()
+                        }
+                });
+            }
             // 初始化 
             function init_app(){
-                var dg = {1:{'title':'t1','word':[{val:'1',act:0,nf:0}, {val:'2',act:0,nf:0}]},length:1}
-                localStorage.setItem("dg_fanyi", JSON.stringify(dg));
+                // var dg = {1:{'title':'t1','word':[{val:'1',act:0,nf:0}, {val:'2',act:0,nf:0}]},length:1}
+                // localStorage.setItem("dg_fanyi", JSON.stringify(dg));
+                uid = ''
+                localStorage.setItem("dg_uid", uid);
             }
             // 渲染添加
             function show_add(){
@@ -67,6 +96,11 @@
                 $('#unit').toggleClass('show')
                 $('#ware').toggleClass('show')
                 $('.back_to_home').toggleClass('show')
+            }
+            // 
+            function show_unit(){
+                $('#userinfo').toggleClass('show')
+                $('#unit').toggleClass('show')
             }
             // 
             function update_act(){
@@ -81,7 +115,8 @@
                 $('.index_w').click(function(){
                     let index = $(this)[0].dataset.i;
                     dg_fanyi[edit_index].word[index].act = dg_fanyi[edit_index].word[index].act==1?0:1;
-                    localStorage.setItem("dg_fanyi", JSON.stringify(dg_fanyi));
+                    // localStorage.setItem("dg_fanyi", JSON.stringify(dg_fanyi));
+                    get_data('up',dg_fanyi[edit_index],edit_index)
                     $(this).toggleClass("word_act1");
                 });
             }
@@ -188,7 +223,7 @@
             }
             // 渲染单元
             function render_unit(){
-                $('#unit').html('<div class="an init_word">INIT</div><div class="an add_word">ADD</div>')
+                $('#unit').html(`<div class="an">${uid}</div><div class="an init_word">INIT</div><div class="an add_word">ADD</div>`)
                 // 添加word
                 $('.add_word').click(function(event){
                     $("#add_title").val('')
@@ -200,8 +235,9 @@
 		            var r = confirm("重启会清空内容，请确认！")
                     if(r){
                         init_app()
-                        render_unit()
-                        location.reload(true)  
+                        location.reload(true)
+                        // render_unit()
+                          
                     }
                 })
                 unit_str = ''
@@ -245,7 +281,9 @@
                         var r = confirm("请确认删除！")
                         if(r){
                             delete dg_fanyi[$(this)[0].dataset.i]
-                            localStorage.setItem("dg_fanyi", JSON.stringify(dg_fanyi));
+                            dg_fanyi.length--
+                            // localStorage.setItem("dg_fanyi", JSON.stringify(dg_fanyi));
+                            get_data('del',dg_fanyi[$(this)[0].dataset.i],$(this)[0].dataset.i)
                             render_unit()
                         }
                         $('.popup_w').remove()
@@ -318,7 +356,8 @@
                                 dg_fanyi[edit_index].word[index].nf ++
                                 del_item = dg_fanyi[edit_index].word.splice(index, 1)[0];
                                 dg_fanyi[edit_index].word.unshift(del_item);
-                                localStorage.setItem("dg_fanyi", JSON.stringify(dg_fanyi));
+                                // localStorage.setItem("dg_fanyi", JSON.stringify(dg_fanyi));
+                                get_data('up',dg_fanyi[edit_index],edit_index)
                                 update_act()
                                 $('#main').prepend($(self));
                             }
@@ -335,7 +374,8 @@
                                     dg_fanyi[edit_index].word[index].nf ++
                                     del_item = dg_fanyi[edit_index].word.splice(index, 1)[0];
                                     dg_fanyi[edit_index].word.unshift(del_item);
-                                    localStorage.setItem("dg_fanyi", JSON.stringify(dg_fanyi));
+                                    // localStorage.setItem("dg_fanyi", JSON.stringify(dg_fanyi));
+                                    get_data('up',dg_fanyi[edit_index],edit_index)
                                     update_act()
                                     $('#main').prepend($(self));
                                 }
@@ -351,7 +391,8 @@
                         $('.index_w').click(function(){
                             let index = $(this)[0].dataset.i;
                             dg_fanyi[edit_index].word[index].act = dg_fanyi[edit_index].word[index].act==1?0:1;
-                            localStorage.setItem("dg_fanyi", JSON.stringify(dg_fanyi));
+                            // localStorage.setItem("dg_fanyi", JSON.stringify(dg_fanyi));
+                            get_data('up',dg_fanyi[edit_index],edit_index)
                             $(this).toggleClass("word_act1");
                         });
                         // 
@@ -395,7 +436,8 @@
                     }else{
                         dg_fanyi[edit_index] = data
                     }
-                    localStorage.setItem("dg_fanyi", JSON.stringify(dg_fanyi));
+                    get_data('up',data,edit_index?edit_index:dg_fanyi.length)
+                    // localStorage.setItem("dg_fanyi", JSON.stringify(dg_fanyi));
                     console.log(dg_fanyi)
                     render_unit()
                     $("#add_title").val('')
@@ -416,7 +458,18 @@
                 console.log('body',event)
                 $('.popup_w').remove()
             })
-
+            // 
+            $('.submit_uid').click(function(){
+                if($("#submit_uid").val()){
+                    console.log($("#submit_uid").val())
+                    uid = $("#submit_uid").val()
+                    localStorage.setItem("dg_uid", uid);
+                    render_unit()
+                    show_unit()
+                }else{
+                    alert('please input uid~~')
+                }
+            })
             // --------------------------------------------------------
         }
     </script>
