@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
     <!-- <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" name="viewport" /> -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>word</title>
     <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
     <script src="./md5.js"></script>
@@ -42,6 +41,7 @@
         </div>
     </div>
 
+<!-- <div></div>/ -->
     <script>
         window.onload = function(){
             // 
@@ -57,6 +57,7 @@
             // dg_fanyi = localStorage.getItem("dg_fanyi");
             // dg_fanyi = JSON.parse(dg_fanyi)
             console.log(uid,'dg_fanyi2:',dg_fanyi)
+            // 登录
             if(uid){
                 get_data()
             }
@@ -185,7 +186,7 @@
                                 })
                                 // 技巧
                                 if(dict.word_result.simple_means.memory_skill){
-                                    h_cont +=`<div style='font-size:14px;'>${dict.word_result.simple_means.memory_skill}</div>`
+                                    h_cont +=`<div>${dict.word_result.simple_means.memory_skill}</div>`
                                 }
 
                                 // h_cont +=`<div class='h_word_means'>${h_word_means}</div>`
@@ -205,11 +206,11 @@
                                         h_dict += `<div style='margin-bottom:4px;'>${val.example[0]}</div>`
                                     }
                                 })
-                                h_cont +=`<div style='font-size:13px;'>${h_dict}</div>`
+                                h_cont +=`<div>${h_dict}</div>`
                             }
 
-                            h_cont +=`<div style='font-size:14px; text-align:right;'><a href="https://fanyi.baidu.com/?aldtype=16047#en/zh/${query}" target="_blank">more »</a></div>`
-
+                            h_cont +=`<div style='text-align:right;'><a href="https://fanyi.baidu.com/?aldtype=16047#en/zh/${query}" target="_blank">more »</a></div>`
+                            h_cont = `<div style='font-size:14px'>${h_cont}</div>`
                             $('.cont').html(h_cont)
                         }
                     } 
@@ -223,7 +224,7 @@
             }
             // 渲染单元
             function render_unit(){
-                $('#unit').html(`<div class="an">${uid}</div><div class="an init_word">INIT</div><div class="an add_word">ADD</div>`)
+                $('#unit').html(`<div><div class="an">${uid}</div><div class="an init_word">INIT</div><div class="an add_word">ADD</div></div>`)
                 // 添加word
                 $('.add_word').click(function(event){
                     $("#add_title").val('')
@@ -236,8 +237,6 @@
                     if(r){
                         init_app()
                         location.reload(true)
-                        // render_unit()
-                          
                     }
                 })
                 unit_str = ''
@@ -464,8 +463,7 @@
                     console.log($("#submit_uid").val())
                     uid = $("#submit_uid").val()
                     localStorage.setItem("dg_uid", uid);
-                    render_unit()
-                    show_unit()
+                    get_data()
                 }else{
                     alert('please input uid~~')
                 }

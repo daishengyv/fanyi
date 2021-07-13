@@ -213,7 +213,6 @@ button{
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    font-size: 12px;
     margin: 4px 0 6px;
 }
 
