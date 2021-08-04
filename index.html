@@ -41,6 +41,11 @@
         </div>
     </div>
 
+
+    
+
+    
+
 <!-- <div></div>/ -->
     <script>
         window.onload = function(){
@@ -224,7 +229,7 @@
             }
             // 渲染单元
             function render_unit(){
-                $('#unit').html(`<div><div class="an">${uid}</div><div class="an init_word">INIT</div><div class="an add_word">ADD</div></div>`)
+                $('#unit').html(`<div><div class="an">${uid}</div><div class="an init_word">INIT</div><div class="an add_word">ADD</div></div><div class="an"><a href="./law.html?uid=${uid}" target="_blank">RBH</a></div>`)
                 // 添加word
                 $('.add_word').click(function(event){
                     $("#add_title").val('')
