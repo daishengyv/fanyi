@@ -1,175 +1,316 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>word</title>
-    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
-    <script src="./md5.js"></script>
-    <link rel="stylesheet" href="./style.css">
-    <link rel="stylesheet" href="css/swiper.min.css">
-    <link rel="stylesheet" href="css/animate.min.css">
-    <style>
-        html,
-        body {
-            position: relative;
-            height: 100%;
-        }
+  <meta charset="utf-8">
+  <title>word</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+  <link href="https://cdn.bootcdn.net/ajax/libs/Swiper/6.8.0/swiper-bundle.min.css" rel="stylesheet">
+  <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+  <script src="./md5.js"></script>
+  <link rel="stylesheet" href="./style.css">
+  <!-- Demo styles -->
+  <style>
+    html,
+    body {
+      position: relative;
+      height: 100%;
+      /* color: #000!important; */
+      color: #fff;
+    }
 
-        body {
-            background: #eee;
-            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
-            font-size: 14px;
-            color: #000;
-            margin: 0;
-            padding: 0;
-        }
+    body {
+      background: rgb(0, 0, 0);
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      /* color: #000; */
+      margin: 0;
+      padding: 0;
+    }
 
-        a{
-            color: #fff;
-        }
-    </style>
+    .swiper-container {
+      width: 100%;
+      /* height: 300px; */
+      position: absolute;
+      left: 40%;
+      top: 22%;
+      margin-left: -150px;
+      margin-top: -150px;
+    }
+
+    .swiper-slide {
+      background-position: center;
+      background-size: cover;
+      border: 1px solid #ccc;
+    }
+
+    a{
+    color: #fff;
+    }
+
+    .hide{
+      height: 0;
+      width: 0;
+      display: flex;
+      bottom: 1000000000px;
+    }
+  </style>
 </head>
 <body>
-
-    <div class="swiper-container">
-        <div class="swiper-wrapper">
-            <div class="swiper-slide blue-slide">
-                <div>
-                    <div class="word-cont">slider1</div>
-                    <div class="word-tran"></div>
-                </div>
-            </div>
-            <div class="swiper-slide red-slide">
-                <div>
-                    <div class="word-cont">slider1</div>
-                    <div class="word-tran"></div>
-                </div>
-            </div>
-            <div class="swiper-slide orange-slide">
-                <div>
-                    <div class="word-cont">slider1</div>
-                    <div class="word-tran"></div>
-                </div>
-            </div>
-        </div>
-    <div class="swiper-pagination"></div>
+  <!-- <div class="ware">
+    <div class="richeng">
+      <div id="richeng" class=""></div>
     </div>
-    <!-- Swiper JS -->
-    <script src="./js/swiper.min.js"></script>
-    <script src="./js/swiper.animate.min.js"></script>
-    <!-- Initialize Swiper -->
-    <script>
-        // 初始化
-        var uid = '',
-            day = 0,
-            words = '',
-            words_len = 0,
-            words_cut = 10,
-            word_index = 0;
-
-        window.onload = function(){
-            try{
-                uid = window.location.search.split('?')[1].split('=')[1]
-                get_data('','','','2')
-            }catch(e){
-                console.log(e)
-            }
-
-            function get_data(act,d,id=0,fy='1'){
-                let data = {
-                    "fy":fy,
-                    "uid":uid
-                }
-                // up 修改，添加 del 删除
-                if(act){data[act]=1}
-                // 更改提交的数据
-                if(d){data['d']=d}
-                // 更改的序号
-                if(id){data['id']=id}
-                $.post('https://test.anyou99.com/wedd/', JSON.stringify(data),
-                    function(msg){
-                        console.log('wedd:',msg)
-                        console.log(msg.data.length)
-                        if(msg&&msg.data){
-                            words = msg.data
-                            words_len = msg.data.length
-                            get_word()
-                        }
-                });
-            }
+  </div> -->
 
 
-            function get_word(){
-                let query = words[word_index]
-                $('.word-cont').html(`<a href="https://fanyi.baidu.com/?aldtype=16047#en/zh/${query}" target="_blank">${query}</a>`)
-                word_index++
-            }
 
-            var mySwiper = new Swiper('.swiper-container',{
-                effect : 'cube',
-                loop : true,
-                loopAdditionalSlides : 1,
-                cube: {
-                    slideShadows: true,
-                    shadow: true,
-                    shadowOffset: 100,
-                    shadowScale: 0.6
-                },
-                on: {
-                    slideChangeTransitionEnd: function(e){
-                        // alert(this.activeIndex);//切换结束时，告诉我现在是第几个slide
-                        // console.log('1111',e,this.activeIndex)
-                        get_word()
-                    },  
-                    click: function(){
-                        // alert('你点了Swiper');/
-                    },
-                },
-            })
+  <!-- Swiper   hide-->
+  <div class="swiper-container ">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide">
+        <div>
+          <div class="word-cont">slider1</div>
+          <div class="wordtran"></div>
+        </div>
+      </div>
+      <div class="swiper-slide">
+        <div>
+          <div class="word-cont">slider2</div>
+          <div class="wordtran"></div>
+        </div>
+      </div>
+      <div class="swiper-slide">
+        <div>
+          <div class="word-cont">slider3</div>
+          <div class="wordtran"></div>
+        </div>
+      </div>
+    </div>
+    <!-- Add Pagination -->
+    <!-- <div class="swiper-pagination"></div> -->
+  </div>
+  <!-- Swiper JS -->
+  <script src="https://cdn.bootcdn.net/ajax/libs/Swiper/6.8.0/swiper-bundle.min.js"></script>
+  <!-- Initialize Swiper -->
+  <script>
+    // 初始化
+    var uid = '1',
+        day = 0,
+        words = '',
+        words_len = 0,
+        words_cut = 10,
+        word_index = -1;
+
+    var swiper = new Swiper('.swiper-container', {
+      effect: 'cube',
+      loop : true,
+      loopAdditionalSlides : 1,
+      grabCursor: true,
+      cubeEffect: {
+        shadow: true,
+        slideShadows: true,
+        shadowOffset: 20,
+        shadowScale: 0.94,
+      },
+      pagination: {
+        el: '.swiper-pagination',
+      },
+      onSlideChangeEnd: function(swiper){
+        alert(swiper.activeIndex) //切换结束时，告诉我现在是第几个slide
+      },
+      on: {
+        slideChangeTransitionEnd: function(e){
+          console.log('1111',e,this.activeIndex)
+          $('.wordtran').html('')
+          get_word()
+        },  
+        click: function(e){
+          console.log('222',e)
+          if($('.wordtran').html()){
+            $('.wordtran').html('')
+          }else{
+            fanyi(words[word_index])
+          }
+        },
+      },
+    })
+
+    try{
+        uid = window.location.search.split('?')[1].split('=')[1]
+    }catch(e){
+        console.log(e)
+    }
+    get_data('','','','2')
+
+    function get_word(){
+        word_index++
+        let query = words[word_index]
+        $('.word-cont').html(`<a href="https://fanyi.baidu.com/?aldtype=16047#en/zh/${query}" target="_blank">${query}</a>`)
+    }
+
+    function get_data(act,d,id=0,fy='2'){
+      let data = {"fy":fy,"uid":uid}
+      // up 修改，添加 del 删除
+      if(act){data[act]=1}
+      // 更改提交的数据
+      if(d){data['d']=d}
+      // 更改的序号
+      if(id){data['id']=id}
+      $.post('https://test.anyou99.com/wedd/', JSON.stringify(data),
+      function(msg){
+        console.log('wedd:',msg)
+        console.log(msg.data.length)
+        if(msg&&msg.data){
+          words = msg.data
+          words_len = msg.data.length
+          get_word()
+        }
+      });
+    }
+    // ------------------------- 
+    function fanyi(query){
+      try {
+          var appid = '20210702000878013';
+          var key = 'fDtFaXiQRoxp6V_cmICB';
+          var salt = (new Date).getTime();
+          // var query = '苹果';
+          // 多个query可以用\n连接  如 query='apple\norange\nbanana\npear'
+          var from = 'en';
+          var to = 'zh';
+          var str1 = appid + query + salt +key;
+          var sign = MD5(str1);
+
+          $.ajax({
+          url: 'http://api.fanyi.baidu.com/api/trans/vip/translate',
+          type: 'get',
+          dataType: 'jsonp',
+          data: {
+              q: query,
+              appid: appid,
+              salt: salt,
+              from: from,
+              to: to,
+              sign: sign,
+              tts:0,
+              dict:0
+          },
+          success: function (data) {
+              h_cont = ''
+              h_word_means = ''
+              h_dict = ''
+              console.log('json', JSON.stringify(data)  );
+              if(data && data.trans_result && data.trans_result[0].dst){
+                  console.log(data)
+                  parts = ''
+                  h_cont += `<h3 style='text-align:center;font-size:30px;'>${data.trans_result[0].dst}</h3>`
+                  if(data.trans_result[0].dict){
+                    dict = JSON.parse(data.trans_result[0].dict)
+                    console.log(dict)
+                    // 
+                    if(dict.word_result.simple_means){
+                    // 
+                    if(dict.word_result.simple_means.symbols&&dict.word_result.simple_means.symbols.length){
+                      h_cont +=`<div class='word_ph'>
+                                <div>英 [${dict.word_result.simple_means.symbols[0].ph_am}]</div>
+                                <div>美 [${dict.word_result.simple_means.symbols[0].ph_en}]</div>
+                                </div>`
+                      // 
+                      dict.word_result.simple_means.symbols[0].parts.forEach(val => {
+                        part = val.part?`<span>${val.part}</span>`:''
+                        means = ''
+                        val.means.forEach(val1=>{
+                          means += `<span>${val1}</span>`
+                        })
+                        parts +=`<div class='h_word_means'>${part} ${means}</div>`
+                      })
+                      h_cont += parts
+                    }
+                    // 
+                    if(dict.word_result.simple_means.word_means){
+                      word_means = dict.word_result.simple_means.word_means
+                      word_means.forEach(val =>{
+                        h_word_means +=`<span>${val}</span>`
+                      })
+                    }
+                    // 技巧
+                    if(dict.word_result.simple_means.memory_skill){
+                      h_cont +=`<div>${dict.word_result.simple_means.memory_skill}</div>`
+                    }
+                    // 
+                    }
+                    // 
+                    if(dict.word_result.edict && dict.word_result.edict.item && dict.word_result.edict.item[0].tr_group){
+                      dict.word_result.edict.item[0].tr_group.forEach(val =>{
+                          if(val.example[0]){
+                              h_dict += `<div style='margin-bottom:4px;'>${val.example[0]}</div>`
+                          }
+                      })
+                      h_cont +=`<div>${h_dict}</div>`
+                    }
+                    h_cont = `<div style='font-size:18px'>${h_cont}</div>`
+                  }
+
+                  $('.wordtran').html(h_cont)
+              }
+          } 
+          });
+        }
+        catch(err){
+            // $('.popup_w').remove()
+            alert('search error!')
+        }
+        return 'loading~~'
+    }
+
+
+
+
+    // 获取aganda ,sp 平分
+    function get_agenda(sp=10){
+      var groups = new Array(sp+7);
+      groups.fill([[],[]])
+      groups = JSON.parse(JSON.stringify(groups))
+      groups.forEach((v,i)=>{
+      if (i<10){
+      groups[i][0].push(i)
+      groups[i][1].push(i)
+      groups[(i+1)][1].push(i)
+      groups[(i+3)][1].push(i)
+      groups[(i+7)][0].push(i)
+      }
+      })
+      return groups
+    }
+
+    var rc = get_agenda(),
+        rcd1 = '',
+        rcd2 = '',
+        rcd3 = '';
+
+    rc.forEach(
+      (v,i)=>{
+        console.log(v,i)
+        rcd1 += `<span>${i+1}</span>`
         
+        var rcd21 = '',
+            rcd31 = '';
+
+        rc[i][0].forEach((v)=>{
+          rcd21+=`<span>${v}</span>`
+        })
+
+        rc[i][1].forEach((v)=>{
+          rcd31+=`<span>${v}</span>`
+        })
+        rcd2 += `<span>${rcd21}</span>`
+        rcd3 += `<span>${rc[i][1]}</span>`
+      }
+    )
+    $('#richeng').html(`<div class='fa'>${rcd1}</div><div class='fa'>${rcd2}</div><div class='fa'>${rcd3}</div>`)
 
 
-
-
-
-        // console.log(groups)
-        // console.log(groups[day])
-
-
-        // function group(array, subGroupLength) {
-        //     let index = 0;
-        //     let newArray = [];
-        //     while(index < array.length) {
-        //         newArray.push(array.slice(index, index += subGroupLength));
-        //     }
-        //     return newArray;
-        // }
-
-        // var Array = [1,2,3,4,5,6,7,8,9,10,11,12,13];
-        // var groupedArray = group(Array, 6);
-        // console.log(groupedArray) 
-        }
-
-        // 获取aganda ,sp 平分
-        function get_agenda(sp=10){
-            var groups = new Array(sp+7);
-            groups.fill([[],[]])
-            groups = JSON.parse(JSON.stringify(groups))
-            groups.forEach((v,i)=>{
-                if (i<10){
-                    groups[i][0].push(i)
-                    groups[i][1].push(i)
-                    groups[(i+1)][1].push(i)
-                    groups[(i+3)][1].push(i)
-                    groups[(i+7)][0].push(i)
-                }
-            })
-            return groups
-        }
-
-
-    </script>
+  </script>
 </body>
- 
+
 </html>

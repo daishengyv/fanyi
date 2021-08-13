@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>word</title>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+
+    <script src="./md5.js"></script>
+    <link rel="stylesheet" href="./style.css">
+    <link href="https://cdn.bootcdn.net/ajax/libs/Swiper/4.4.2/css/swiper.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcdn.net/ajax/libs/Swiper/4.4.2/js/swiper.min.js"></script>
+
+    <style>
+        html,
+        body {
+            position: relative;
+            height: 100%;
+        }
+
+        body {
+            background: #eee;
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            color: #000;
+            margin: 0;
+            padding: 0;
+        }
+
+        a{
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide blue-slide">
+                <div>
+                    <div class="word-cont">slider1</div>
+                    <div class="wordtran"></div>
+                </div>
+            </div>
+            <div class="swiper-slide red-slide">
+                <div>
+                    <div class="word-cont">slider1</div>
+                    <div class="wordtran"></div>
+                </div>
+            </div>
+            <div class="swiper-slide orange-slide">
+                <div>
+                    <div class="word-cont">slider1</div>
+                    <div class="wordtran"></div>
+                </div>
+            </div>
+        </div>
+    <!-- <div class="swiper-pagination"></div> -->
+    </div>
+    <!-- Swiper JS -->
+
+    <!-- Initialize Swiper -->
+    <script>
+        // 初始化
+        var uid = '1',
+            day = 0,
+            words = '',
+            words_len = 0,
+            words_cut = 10,
+            word_index = 0;
+
+        window.onload = function(){
+            try{
+                uid = window.location.search.split('?')[1].split('=')[1]
+                get_data('','','','2')
+            }catch(e){
+                console.log(e)
+            }
+            // 
+            function get_data(act,d,id=0,fy='1'){
+                let data = {
+                    "fy":fy,
+                    "uid":uid
+                }
+                // up 修改，添加 del 删除
+                if(act){data[act]=1}
+                // 更改提交的数据
+                if(d){data['d']=d}
+                // 更改的序号
+                if(id){data['id']=id}
+                $.post('https://test.anyou99.com/wedd/', JSON.stringify(data),
+                    function(msg){
+                        console.log('wedd:',msg)
+                        console.log(msg.data.length)
+                        if(msg&&msg.data){
+                            words = msg.data
+                            words_len = msg.data.length
+                            get_word()
+                        }
+                });
+            }
+            // --------------------
+            var mySwiper = new Swiper('.swiper-container',{
+                effect : 'cube',
+                loop : true,
+                loopAdditionalSlides : 1,
+                cube: {
+                    slideShadows: true,
+                    shadow: true,
+                    shadowOffset: 100,
+                    shadowScale: 0.6
+                },
+                on: {
+                    slideChangeTransitionEnd: function(e){
+                        // alert(this.activeIndex);//切换结束时，告诉我现在是第几个slide
+                        // console.log('1111',e,this.activeIndex)
+                        // get_word()
+                    },  
+                    click: function(){
+                        // fanyi(words[word_index])
+                    },
+                },
+            })
+            // -------------------------- 
+            function get_word(){
+                let query = words[word_index]
+                $('.word-cont').html(`<a href="https://fanyi.baidu.com/?aldtype=16047#en/zh/${query}" target="_blank">${query}</a>`)
+                word_index++
+            }
+            // ------------------------- 
+            function fanyi(query){
+                try {
+                    var appid = '20210702000878013';
+                    var key = 'fDtFaXiQRoxp6V_cmICB';
+                    var salt = (new Date).getTime();
+                    // var query = '苹果';
+                    // 多个query可以用\n连接  如 query='apple\norange\nbanana\npear'
+                    var from = 'en';
+                    var to = 'zh';
+                    var str1 = appid + query + salt +key;
+                    var sign = MD5(str1);
+
+                    $.ajax({
+                    url: 'http://api.fanyi.baidu.com/api/trans/vip/translate',
+                    type: 'get',
+                    dataType: 'jsonp',
+                    data: {
+                        q: query,
+                        appid: appid,
+                        salt: salt,
+                        from: from,
+                        to: to,
+                        sign: sign,
+                        tts:0,
+                        dict:0
+                    },
+                    success: function (data) {
+                        h_cont = ''
+                        h_word_means = ''
+                        h_dict = ''
+                        console.log('json', JSON.stringify(data)  );
+                        if(data && data.trans_result && data.trans_result[0].dst){
+                            console.log(data)
+                            dict = JSON.parse(data.trans_result[0].dict)
+                            console.log(dict.word_result)
+                            h_cont += `<h4>${data.trans_result[0].dst}</h4>`
+                            h_cont +=`<div class='word_ph'>
+                                        <div>英[${dict.word_result.simple_means.symbols[0].ph_am}]</div>
+                                        <div>美[${dict.word_result.simple_means.symbols[0].ph_en}]</div>
+                                        </div>`
+
+                            // <audio src="${dict.word_result.edict.item[0].dst_tts}"></audio>
+                            // <audio src="${dict.word_result.edict.item[0].src_tts}"></audio>
+                            parts = ''
+                            if(!dict.word_result.simple_means.symbols[0].parts.length){
+                                return
+                            }
+                            dict.word_result.simple_means.symbols[0].parts.forEach(val => {
+                                part = `<span>${val.part}</span>`
+                                means = ''
+                                val.means.forEach(val1=>{
+                                    means += `<span>${val1}</span>`
+                                })
+                                parts +=`<div class='h_word_means'>${part} ${means}</div>`
+                            })
+                            h_cont += parts
+                                        // 
+                            if(dict.word_result.simple_means){
+                                word_means = dict.word_result.simple_means.word_means
+                                word_means.forEach(val =>{
+                                    h_word_means +=`<span>${val}</span>`
+                                })
+                                // 技巧
+                                if(dict.word_result.simple_means.memory_skill){
+                                    h_cont +=`<div>${dict.word_result.simple_means.memory_skill}</div>`
+                                }
+                            }
+
+
+                            if(dict.word_result.edict.item[0].tr_group){
+                                dict.word_result.edict.item[0].tr_group.forEach(val =>{
+                                    if(val.example[0]){
+                                        h_dict += `<div style='margin-bottom:4px;'>${val.example[0]}</div>`
+                                    }
+                                })
+                                h_cont +=`<div>${h_dict}</div>`
+                            }
+
+                            h_cont +=`<div style='text-align:right;'><a href="https://fanyi.baidu.com/?aldtype=16047#en/zh/${query}" target="_blank">more »</a></div>`
+                            h_cont = `<div style='font-size:14px'>${h_cont}</div>`
+                            $('.wordtran').html(h_cont)
+                        }
+                    } 
+                    });
+                }
+                catch(err){
+                    $('.popup_w').remove()
+                    alert('search error!')
+                }
+                return 'loading~~'
+            }
+
+
+
+
+
+
+
+
+
+
+
+        // console.log(groups)
+        // console.log(groups[day])
+
+
+        // function group(array, subGroupLength) {
+        //     let index = 0;
+        //     let newArray = [];
+        //     while(index < array.length) {
+        //         newArray.push(array.slice(index, index += subGroupLength));
+        //     }
+        //     return newArray;
+        // }
+
+        // var Array = [1,2,3,4,5,6,7,8,9,10,11,12,13];
+        // var groupedArray = group(Array, 6);
+        // console.log(groupedArray) 
+        }
+
+        // 获取aganda ,sp 平分
+        function get_agenda(sp=10){
+            var groups = new Array(sp+7);
+            groups.fill([[],[]])
+            groups = JSON.parse(JSON.stringify(groups))
+            groups.forEach((v,i)=>{
+                if (i<10){
+                    groups[i][0].push(i)
+                    groups[i][1].push(i)
+                    groups[(i+1)][1].push(i)
+                    groups[(i+3)][1].push(i)
+                    groups[(i+7)][0].push(i)
+                }
+            })
+            return groups
+        }
+    // --------------------------------------------------------
+    </script>
+</body>
+ 
+</html>
