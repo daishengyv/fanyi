@@ -70,15 +70,28 @@
                 if(act){data[act]=1}
                 if(d){data['d']=d}
                 if(id){data['id']=id}
-                $.post('https://test.anyou99.com/wedd/', JSON.stringify(data),
+
+                $.get('https://test.anyou99.com/wedd/', data,
                     function(msg){
-                        console.log('wedd:',msg)
+                        console.log('wedd:',msg,typeof(msg))
+                        msg = JSON.parse(msg)
                         if(msg&&msg.data){
                             dg_fanyi = msg.data
                             render_unit()
                             show_unit()
                         }
-                });
+                } );
+                
+
+                // $.post('https://test.anyou99.com/wedd/', JSON.stringify(data),
+                //     function(msg){
+                //         console.log('wedd:',msg)
+                //         if(msg&&msg.data){
+                //             dg_fanyi = msg.data
+                //             render_unit()
+                //             show_unit()
+                //         }
+                // });
             }
             // 初始化 
             function init_app(){
